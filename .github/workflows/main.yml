@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  AWS_REGION: US-east-1
+  AWS_REGION: us-east-1
   ECR_REPOSITORY: my-java-app
   ECS_CLUSTER: my-ecs-cluster
   ECS_SERVICE: my-ecs-service
