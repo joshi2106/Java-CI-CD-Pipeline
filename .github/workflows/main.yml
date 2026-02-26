@@ -10,7 +10,7 @@ env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: my-java-app
   ECR_REGISTRY: 261949106502.dkr.ecr.us-east-1.amazonaws.com
-  ECS_CLUSTER: my-ecs-cluster
+  ECS_CLUSTER: my-ecs-service
   ECS_SERVICE: my-ecs-service
   SONAR_HOST_URL: http://100.54.218.38:6507
 
