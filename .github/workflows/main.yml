@@ -9,6 +9,7 @@ env:
   ACCOUNT_ID: 261949106502
   AWS_REGION: us-east-1
   ECR_REPOSITORY: my-java-app
+  ECR_REGISTRY: 261949106502.dkr.ecr.us-east-1.amazonaws.com
   ECS_CLUSTER: my-ecs-cluster
   ECS_SERVICE: my-ecs-service
   SONAR_HOST_URL: http://100.54.218.38:6507
@@ -37,9 +38,6 @@ jobs:
             -Dsonar.host.url=${{ env.SONAR_HOST_URL }} \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
-      # -----------------------------
-      # STATIC AWS CREDENTIALS
-      # -----------------------------
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -49,25 +47,20 @@ jobs:
 
       - name: Login to Amazon ECR
         run: |
-          aws ecr get-login-password \
-            --region $AWS_REGION | docker login \
-            --username AWS \
-            --password-stdin $ECR_REGISTRY
+          aws ecr get-login-password --region $AWS_REGION | \
+          docker login --username AWS --password-stdin $ECR_REGISTRY
 
       - name: Build Docker Image
         run: |
-          docker build -t $ECR_REPOSITORY:latest .
-          docker tag $ECR_REPOSITORY:latest \
-          ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:latest
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
 
       - name: Push Image to ECR
         run: |
-          docker push ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:latest
-          
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
       - name: Deploy to ECS
         run: |
           aws ecs update-service \
             --cluster $ECS_CLUSTER \
             --service $ECS_SERVICE \
             --force-new-deployment
-     
