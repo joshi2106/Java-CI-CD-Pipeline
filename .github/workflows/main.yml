@@ -6,6 +6,7 @@ on:
       - main
 
 env:
+  ACCOUNT_ID: 261949106502
   AWS_REGION: us-east-1
   ECR_REPOSITORY: my-java-app
   ECS_CLUSTER: my-ecs-cluster
@@ -61,5 +62,11 @@ jobs:
       - name: Push Image to ECR
         run: |
           docker push ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:latest
-
+          
+      - name: Deploy to ECS
+        run: |
+          aws ecs update-service \
+            --cluster $ECS_CLUSTER \
+            --service $ECS_SERVICE \
+            --force-new-deployment
      
